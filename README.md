@@ -1,1 +1,1 @@
-This repo for shared people only.
+This repo for shared people only. Kindly do not shared with other.
