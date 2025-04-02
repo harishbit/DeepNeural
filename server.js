@@ -20,14 +20,14 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Connect to MongoDB
-mongoose.connect('mongodb+srv://adarshmishr6:Adarshss12%23@cluster0.hngx2rn.mongodb.net/chat_boat', {
+mongoose.connect(process.env.MONGODB_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     connectTimeoutMS: 30000,
     retryWrites: true,
     w: 'majority'
 }).then(() => {
-    console.log('Connected to MongoDB');
+    console.log('Hello from MongoDB');
 }).catch(err => {
     console.error('MongoDB connection error:', err);
     process.exit(1); // Exit if cannot connect to database
@@ -35,7 +35,7 @@ mongoose.connect('mongodb+srv://adarshmishr6:Adarshss12%23@cluster0.hngx2rn.mong
 
 // Middleware
 app.use(cors({
-    origin: 'http://localhost:3000',
+    origin: process.env.CLIENT_ORIGIN,
     credentials: true
 }));
 app.use(express.json());
@@ -155,10 +155,7 @@ app.post("/run-script", (req, res) => {
 const verificationCodes = new Map();
 
 // Email configuration using secure SMTP settings
-console.log('Email configuration:', {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS ? 'Password is set' : 'Password is not set'
-});
+
 
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
@@ -925,5 +922,4 @@ app.delete('/api/chats', requireAuth, async (req, res) => {
 // Start the server
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
-    console.log(`Open your browser and navigate to http://localhost:${PORT}`);
 }); 
