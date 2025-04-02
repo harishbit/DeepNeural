@@ -148,27 +148,6 @@ app.post("/run-script", (req, res) => {
     });
 });
 
-// app.get("/run-script", (req, res) => {
-//     exec("python process_data.py", (error, stdout, stderr) => {
-//       if (error) {
-//         console.error(`Execution error: ${error.message}`);
-//         return res.status(500).json({ error: "Failed to run Python script" });
-//       }
-
-//       if (stderr) {
-//         console.error(`Python error: ${stderr}`);
-//         return res.status(500).json({ error: "Python script error", details: stderr });
-//       }
-
-//       try {
-//         const result = JSON.parse(stdout);
-//         return res.json(result);
-//       } catch (parseError) {
-//         console.error(`Parsing error: ${parseError.message}`);
-//         return res.status(500).json({ error: "Error parsing script output", details: stdout });
-//       }
-//     });
-//   });
 
 
 
