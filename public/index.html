@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepNeural</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        :root {
+            /* Light theme (default) */
+            --bg-primary: #f5f7fa;
+            --bg-secondary: #ffffff;
+            --border-color: #e5e7eb;
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --accent-color: #4f46e5;
+            --accent-hover: #4338ca;
+            --message-user: #eef2ff;
+            --message-ai: #f3f4f6;
+            --input-bg: #ffffff;
+            --box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --bg-hover: #f1f5f9;
+            --bg-accent-light: #f0f0ff;
+            --error-color: #ef4444;
+        }
+
+        [data-theme="dark"] {
+            /* Dark theme */
+            --bg-primary: #1f2937;
+            --bg-secondary: #111827;
+            --border-color: #374151;
+            --text-primary: #f9fafb;
+            --text-secondary: #d1d5db;
+            --accent-color: #6366f1;
+            --accent-hover: #4f46e5;
+            --message-user: #4f46e5;
+            --message-ai: #374151;
+            --input-bg: #1f2937;
+            --box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+            --bg-hover: #2d3748;
+            --bg-accent-light: #1e1e3f;
+            --error-color: #f87171;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: var(--bg-primary);
+            min-height: 100vh;
+            display: flex;
+            color: var(--text-primary);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            transition: transform 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        .user-info {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: var(--bg-primary);
+            border-radius: 0.5rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .user-info h3 {
+            font-size: 1rem;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .user-info p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .nav-links {
+            margin-top: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover {
+            background: var(--bg-primary);
+            color: var(--accent-color);
+        }
+
+        .nav-link.active {
+            background: var(--message-user);
+            color: var(--accent-color);
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            transition: margin-left 0.3s ease;
+        }
+
+        .chat-container {
+            flex: 1;
+            background: var(--bg-secondary);
+            border-radius: 1rem;
+            box-shadow: var(--box-shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            height: calc(100vh - 4rem);
+            position: relative;
+        }
+
+        .chat-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-secondary);
+            z-index: 10;
+        }
+
+        .chat-header h2 {
+            font-size: 1.25rem;
+            color: var(--text-primary);
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            position: absolute;
+            top: 60px;
+            bottom: 70px;
+            left: 0;
+            right: 0;
+            overflow-x: hidden;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            line-height: 1.5;
+        }
+
+        .user-message {
+            background: var(--message-user);
+            color: var(--text-primary);
+            align-self: flex-end;
+        }
+
+        .ai-message {
+            background: var(--message-ai);
+            color: var(--text-primary);
+            align-self: flex-start;
+        }
+
+        .chat-input {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 1rem;
+            background: var(--bg-secondary);
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 10;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+            background: var(--input-bg);
+            color: var(--text-primary);
+        }
+
+        .chat-input input:focus {
+            border-color: var(--accent-color);
+        }
+
+        .chat-input button {
+            padding: 0.75rem 1.5rem;
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .chat-input button:hover {
+            background: var(--accent-hover);
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: absolute;
+            bottom: 1.5rem;
+            left: 1.5rem;
+            right: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-primary);
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .theme-toggle span {
+            margin-right: 0.5rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 280px;
+                /* Always show the sidebar */
+                transform: translateX(0);
+                z-index: 100;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+
+            body {
+                flex-direction: column;
+            }
+
+            .theme-toggle {
+                position: static;
+                margin-top: 1rem;
+            }
+
+            .chat-container {
+                height: calc(100vh - 160px);
+            }
+
+            .chat-messages {
+                top: 50px;
+                bottom: 60px;
+            }
+        }
+
+        /* Icon button styling */
+        .icon-button {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: background-color 0.2s;
+        }
+
+        .icon-button:hover {
+            background-color: var(--bg-hover);
+            color: var(--accent-color);
+        }
+
+        .message .sender {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Loading animation */
+        .loading-dots {
+            display: inline-block;
+            min-width: 24px;
+            text-align: left;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <a href="/" class="logo">DeepNeural</a>
+        </div>
+        <div class="user-info">
+            <h3 id="username-display">User</h3>
+            <p id="user-email-display">user@example.com</p>
+        </div>
+        <nav class="nav-links">
+            <a href="#" class="nav-link active" id="new-chat">
+                <span class="material-icons">chat</span>
+                New Chat
+            </a>
+            <!-- <a href="#" class="nav-link" id="history-link">
+                <span class="material-icons">history</span>
+                History
+            </a> -->
+            <a href="/settings.html" class="nav-link">
+                <span class="material-icons">settings</span>
+                Settings
+            </a>
+            <a href="javascript:void(0);" class="nav-link" id="logout-btn" onclick="logout(); return false;">
+                <span class="material-icons">logout</span>
+                Logout
+            </a>
+        </nav>
+        <div class="theme-toggle" id="theme-toggle">
+            <span class="material-icons">dark_mode</span>
+            <span>Dark Mode</span>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="chat-container">
+            <div class="chat-header">
+                <h2>New Chat</h2>
+                <button class="clear-chat">
+                    <span class="material-icons">delete</span>
+                </button>
+            </div>
+            <div class="chat-messages" id="messageContainer">
+                <!-- Messages will be added here dynamically -->
+            </div>
+            <form id="chat-form" class="chat-input">
+                <input type="text" id="userInput" name="userInput" placeholder="Type your message here..." required
+                    autocomplete="off">
+                <button type="submit">
+                    <span class="material-icons">send</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Theme Toggle
+        const htmlElement = document.documentElement;
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = themeToggle.querySelector('.material-icons');
+        const themeText = themeToggle.querySelector('span:not(.material-icons)');
+
+        // Check for saved theme preference or use user's system preference
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            htmlElement.setAttribute('data-theme', savedTheme);
+            updateThemeToggle(savedTheme);
+        } else {
+            // Check user's system preference
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                htmlElement.setAttribute('data-theme', 'dark');
+                updateThemeToggle('dark');
+            }
+        }
+
+        // Theme toggle functionality
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = htmlElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+            htmlElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeToggle(newTheme);
+        });
+
+        function updateThemeToggle(theme) {
+            if (theme === 'dark') {
+                themeIcon.textContent = 'light_mode';
+                themeText.textContent = 'Light Mode';
+            } else {
+                themeIcon.textContent = 'dark_mode';
+                themeText.textContent = 'Dark Mode';
+            }
+        }
+
+        // Check authentication status
+        async function checkAuth() {
+            try {
+                const response = await fetch('/api/auth/me');
+                if (!response.ok) {
+                    window.location.href = '/login.html';
+                    return;
+                }
+                const user = await response.json();
+                document.getElementById('username-display').textContent = user.username;
+                document.getElementById('user-email-display').textContent = user.email;
+                // Load chat history after authentication
+                loadChatHistory();
+            } catch (error) {
+                window.location.href = '/login.html';
+            }
+        }
+
+        // Load chat history
+        async function loadChatHistory() {
+            try {
+                // Show loading indicator in history container
+                const existingContainer = document.querySelector('.history-container');
+                if (existingContainer) {
+                    existingContainer.innerHTML = '<p style="text-align: center; padding: 1rem;">Loading history...</p>';
+                    existingContainer.style.display = 'block';
+                }
+
+                const response = await fetch('/api/chats/history', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include'
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to load history');
+                }
+
+                const history = await response.json();
+                displayChatHistory(history);
+            } catch (error) {
+                console.error('Error loading chat history:', error);
+                // Show error message in history container
+                const existingContainer = document.querySelector('.history-container');
+                if (existingContainer) {
+                    existingContainer.innerHTML = '<p style="color: var(--error-color); text-align: center; padding: 1rem;">Failed to load history</p>';
+                }
+            }
+        }
+
+        // Display chat history in sidebar
+        function displayChatHistory(history) {
+            // Remove existing history container if it exists
+            const existingContainer = document.querySelector('.history-container');
+            if (existingContainer) {
+                existingContainer.remove();
+            }
+
+            const historyContainer = document.createElement('div');
+            historyContainer.className = 'history-container';
+            historyContainer.style.display = 'block'; // Always show it once loaded
+            historyContainer.style.marginTop = '1rem';
+            historyContainer.style.borderTop = '1px solid var(--border-color)';
+            historyContainer.style.paddingTop = '1rem';
+            historyContainer.style.maxHeight = '50vh';
+            historyContainer.style.overflowY = 'auto';
+
+            // Add header with clear all button
+            const historyHeader = document.createElement('div');
+            historyHeader.style.display = 'flex';
+            historyHeader.style.justifyContent = 'space-between';
+            historyHeader.style.alignItems = 'center';
+            historyHeader.style.padding = '0 1rem 0.5rem 1rem';
+            historyHeader.style.borderBottom = '1px solid var(--border-color)';
+            historyHeader.style.marginBottom = '0.5rem';
+
+            const historyTitle = document.createElement('h3');
+            historyTitle.textContent = 'Chat History';
+            historyTitle.style.fontSize = '1rem';
+            historyTitle.style.margin = '0';
+            historyTitle.style.color = 'var(--text-primary)';
+
+            const clearAllBtn = document.createElement('button');
+            clearAllBtn.innerHTML = '<span class="material-icons" style="font-size: 1rem;">delete_sweep</span> Clear All';
+            clearAllBtn.style.display = 'flex';
+            clearAllBtn.style.alignItems = 'center';
+            clearAllBtn.style.gap = '0.25rem';
+            clearAllBtn.style.fontSize = '0.8rem';
+            clearAllBtn.style.padding = '0.25rem 0.5rem';
+            clearAllBtn.style.border = 'none';
+            clearAllBtn.style.borderRadius = '0.25rem';
+            clearAllBtn.style.background = 'var(--bg-primary)';
+            clearAllBtn.style.color = 'var(--error-color)';
+            clearAllBtn.style.cursor = 'pointer';
+
+            clearAllBtn.addEventListener('click', async () => {
+                if (confirm('Are you sure you want to delete ALL chat history? This cannot be undone.')) {
+                    try {
+                        const response = await fetch('/api/chats', {
+                            method: 'DELETE',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            credentials: 'include'
+                        });
+
+                        if (response.ok) {
+                            // Show success message
+                            historyContainer.innerHTML = '<p style="color: var(--text-secondary); text-align: center; padding: 1rem;">No chat history</p>';
+                            // Clear current chat if any
+                            messageContainer.innerHTML = '';
+                            document.querySelector('.chat-header h2').textContent = 'New Chat';
+                        } else {
+                            alert('Failed to clear chat history');
+                        }
+                    } catch (error) {
+                        console.error('Error clearing history:', error);
+                        alert('Error clearing chat history');
+                    }
+                }
+            });
+
+            historyHeader.appendChild(historyTitle);
+            historyHeader.appendChild(clearAllBtn);
+            historyContainer.appendChild(historyHeader);
+
+            if (!history || history.length === 0) {
+                historyContainer.innerHTML += '<p style="color: var(--text-secondary); text-align: center; padding: 1rem;">No chat history</p>';
+            } else {
+                const historyList = document.createElement('div');
+                historyList.className = 'history-list';
+
+                history.forEach(chat => {
+                    const historyItem = document.createElement('div');
+                    historyItem.className = 'history-item';
+                    historyItem.setAttribute('data-chat-id', chat._id);
+                    historyItem.style.display = 'flex';
+                    historyItem.style.alignItems = 'center';
+                    historyItem.style.padding = '0.75rem 1rem';
+                    historyItem.style.margin = '0.25rem 0';
+                    historyItem.style.borderRadius = '0.5rem';
+                    historyItem.style.cursor = 'pointer';
+                    historyItem.style.transition = 'background-color 0.2s';
+                    historyItem.style.backgroundColor = 'var(--bg-primary)';
+                    historyItem.style.color = 'var(--text-primary)';
+
+                    // Check if this is the current active chat
+                    const currentChatId = sessionStorage.getItem('currentChatId');
+                    if (currentChatId === chat._id) {
+                        historyItem.style.backgroundColor = 'var(--bg-accent-light)';
+                        historyItem.style.borderLeft = '2px solid var(--accent-color)';
+                    }
+
+                    historyItem.innerHTML = `
+                        <span class="material-icons" style="font-size: 1.2rem; margin-right: 0.75rem; color: var(--text-secondary);">chat</span>
+                        <div style="flex-grow: 1; overflow: hidden;">
+                            <div style="font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${chat.title || 'Chat'}</div>
+                            <div style="font-size: 0.75rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                ${formatDate(new Date(chat.updatedAt))}
+                            </div>
+                        </div>
+                    `;
+
+                    historyItem.addEventListener('mouseover', () => {
+                        if (currentChatId !== chat._id) {
+                            historyItem.style.backgroundColor = 'var(--bg-hover)';
+                        }
+                    });
+
+                    historyItem.addEventListener('mouseout', () => {
+                        if (currentChatId !== chat._id) {
+                            historyItem.style.backgroundColor = 'var(--bg-primary)';
+                        }
+                    });
+
+                    historyItem.addEventListener('click', () => {
+                        // Load the chat
+                        loadChat(chat._id);
+
+                        // Update the active state
+                        document.querySelectorAll('.history-item').forEach(item => {
+                            item.style.backgroundColor = 'var(--bg-primary)';
+                            item.style.borderLeft = 'none';
+                        });
+                        historyItem.style.backgroundColor = 'var(--bg-accent-light)';
+                        historyItem.style.borderLeft = '2px solid var(--accent-color)';
+                    });
+
+                    historyList.appendChild(historyItem);
+                });
+
+                historyContainer.appendChild(historyList);
+            }
+
+            // Format date helper
+            function formatDate(date) {
+                const now = new Date();
+                const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                const yesterday = new Date(today);
+                yesterday.setDate(yesterday.getDate() - 1);
+
+                if (date >= today) {
+                    return `Today at ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+                } else if (date >= yesterday) {
+                    return `Yesterday at ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+                } else {
+                    return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+                }
+            }
+
+            // Add to sidebar
+            const sidebar = document.getElementById('sidebar');
+            sidebar.appendChild(historyContainer);
+        }
+
+        // Load specific chat
+        async function loadChat(chatId) {
+            try {
+                const response = await fetch(`/api/chats/${chatId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include'
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to load chat');
+                }
+
+                const chat = await response.json();
+
+                // Clear the message container
+                messageContainer.innerHTML = '';
+
+                // Add each message to the container
+                if (chat.messages && chat.messages.length > 0) {
+                    chat.messages.forEach(msg => {
+                        addMessage(msg.content, msg.isUser);
+                    });
+                }
+
+                // Update active state for navigation
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    link.classList.remove('active');
+                });
+                document.querySelector('.history-item.active')?.classList.remove('active');
+
+                // Set the chat title as header
+                document.querySelector('.chat-header h2').textContent = chat.title || 'Chat';
+
+            } catch (error) {
+                console.error('Error loading chat:', error);
+                messageContainer.innerHTML = '<div class="message ai-message">Error loading chat</div>';
+            }
+        }
+
+        // Toggle history view - moved to its own function
+        function toggleHistoryView() {
+            const historyContainer = document.querySelector('.history-container');
+            if (historyContainer) {
+                historyContainer.style.display = historyContainer.style.display === 'none' ? 'block' : 'none';
+            } else {
+                // Load history if it doesn't exist yet
+                loadChatHistory();
+            }
+        }
+
+        // Event listeners
+        const historyLink = document.getElementById('history-link');
+        if (historyLink) {
+            historyLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                toggleHistoryView();
+            });
+        }
+
+        // Handle logout with simpler approach
+        function logout() {
+            console.log('Logout function called');
+
+            // Show a simple alert
+            alert('Are you sure you want to log out?');
+
+            // Directly redirect to login page after a brief delay
+            setTimeout(function () {
+                window.location.href = '/login.html';
+            }, 500000);
+
+            // Make the API call to clear the session
+            fetch('/api/auth/logout', {
+                method: 'POST',
+                credentials: 'include'
+            }).catch(function (error) {
+                console.error('Logout error:', error);
+                // Error already handled by redirect
+            });
+
+            // Clear client-side storage
+            localStorage.clear();
+            sessionStorage.clear();
+
+            return false;
+        }
+
+        // This is now redundant but keeping as backup
+        document.addEventListener('DOMContentLoaded', function () {
+            var logoutBtn = document.getElementById('logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    logout();
+                    return false;
+                });
+            }
+        });
+
+        // New chat functionality
+        document.getElementById('new-chat').addEventListener('click', (e) => {
+            e.preventDefault();
+            messageContainer.innerHTML = '';
+            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+            e.target.classList.add('active');
+        });
+
+        // Initialize the page
+        checkAuth();
+
+        // Handle chat functionality
+        const messageContainer = document.getElementById('messageContainer');
+        const userInput = document.getElementById('userInput');
+        const chatForm = document.getElementById('chat-form');
+
+        // Add direct event listeners (no need to wait for DOMContentLoaded)
+        chatForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            sendMessage();
+        });
+
+        userInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        function sendMessage() {
+            const message = userInput.value.trim();
+            if (!message) return;
+
+            console.log("Sending message:", message);
+
+            // Clear input and focus it for next message
+            userInput.value = '';
+            userInput.focus();
+
+            // Add user message to chat
+            addMessage(message, true);
+
+            // Show loading indicator
+            const loadingId = 'loading-' + Date.now();
+            const loadingElement = document.createElement('div');
+            loadingElement.id = loadingId;
+            loadingElement.className = 'message ai-message';
+
+            // Create a better loading animation
+            loadingElement.innerHTML = `
+                <div class="sender">DeepNeural</div>
+                <div>
+                    <div class="typing-indicator">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+            `;
+
+            // Add some CSS for the typing indicator
+            if (!document.getElementById('typing-indicator-style')) {
+                const style = document.createElement('style');
+                style.id = 'typing-indicator-style';
+                style.textContent = `
+                    .typing-indicator {
+                        display: inline-flex;
+                        align-items: center;
+                    }
+                    .typing-indicator span {
+                        height: 8px;
+                        width: 8px;
+                        background: var(--text-secondary);
+                        border-radius: 50%;
+                        display: block;
+                        margin: 0 3px;
+                        opacity: 0.4;
+                    }
+                    .typing-indicator span:nth-child(1) {
+                        animation: pulse 1s infinite 0s;
+                    }
+                    .typing-indicator span:nth-child(2) {
+                        animation: pulse 1s infinite 0.2s;
+                    }
+                    .typing-indicator span:nth-child(3) {
+                        animation: pulse 1s infinite 0.4s;
+                    }
+                    @keyframes pulse {
+                        0% { opacity: 0.4; }
+                        50% { opacity: 1; }
+                        100% { opacity: 0.4; }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+
+            messageContainer.appendChild(loadingElement);
+            messageContainer.scrollTop = messageContainer.scrollHeight;
+
+            // Set a timeout to show an error if the request takes too long
+            const timeoutId = setTimeout(() => {
+                console.log("Request timeout reached");
+
+                // Check if the loading element still exists
+                const loadingEl = document.getElementById(loadingId);
+                if (loadingEl) {
+                    loadingEl.remove();
+                    addMessage("I'm sorry, the request is taking longer than expected. Please try again with a shorter message.", false);
+                }
+            }, 30000); // 30 seconds timeout
+
+            // Call the API
+            fetch('/run-script', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ prompt: message })
+            })
+                .then(response => {
+                    console.log("Response received, status:", response.status);
+                    return response.json();
+                })
+                .then(data => {
+                    // Clear timeout since we got a response
+                    clearTimeout(timeoutId);
+
+                    // Remove loading message
+                    const loadingEl = document.getElementById(loadingId);
+                    if (loadingEl) {
+                        loadingEl.remove();
+                    }
+
+                    console.log("Response data:", data);
+
+                    if (data && data.response) {
+                        // Add the AI response to the chat
+                        addMessage(data.response, false);
+
+                        // Try to save to history if needed
+                        try {
+                            saveChatToHistory(message, data.response);
+                        } catch (e) {
+                            console.error("Error saving to history:", e);
+                        }
+                    } else {
+                        console.error("Invalid response format:", data);
+                        addMessage("Sorry, I couldn't understand the response. Please try again.", false);
+                    }
+                })
+                .catch(error => {
+                    // Clear timeout since we got a response (error)
+                    clearTimeout(timeoutId);
+
+                    // Remove loading message
+                    const loadingEl = document.getElementById(loadingId);
+                    if (loadingEl) {
+                        loadingEl.remove();
+                    }
+
+                    console.error("Error calling API:", error);
+                    addMessage("Sorry, there was an error connecting to the server. Please check your connection and try again.", false);
+                });
+        }
+
+        function addMessage(message, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user-message' : 'ai-message'}`;
+
+            // Create sender label
+            const senderDiv = document.createElement('div');
+            senderDiv.className = 'sender';
+            senderDiv.textContent = isUser ? 'You' : 'DeepNeural';
+            messageDiv.appendChild(senderDiv);
+
+            // Create message content
+            const contentDiv = document.createElement('div');
+            contentDiv.textContent = message;
+            messageDiv.appendChild(contentDiv);
+
+            // Add to container
+            messageContainer.appendChild(messageDiv);
+
+            // Ensure scroll to bottom happens after DOM update
+            setTimeout(() => {
+                messageContainer.scrollTop = messageContainer.scrollHeight;
+            }, 0);
+        }
+
+        // Save chat to history
+        async function saveChatToHistory(userMessage, aiResponse) {
+            try {
+                const response = await fetch('/api/chats', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        messages: [
+                            { content: userMessage, isUser: true },
+                            { content: aiResponse, isUser: false }
+                        ]
+                    })
+                });
+                if (response.ok) {
+                    loadChatHistory(); // Reload history
+                }
+            } catch (error) {
+                console.error('Error saving chat:', error);
+            }
+        }
+
+        // Clear chat functionality
+        document.querySelector('.clear-chat').addEventListener('click', () => {
+            messageContainer.innerHTML = '';
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - DeepNeural</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        :root {
+            /* Light theme (default) */
+            --bg-primary: #f5f7fa;
+            --bg-secondary: #ffffff;
+            --border-color: #e5e7eb;
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --accent-color: #4f46e5;
+            --accent-hover: #4338ca;
+            --input-bg: #ffffff;
+            --box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --error-color: #dc2626;
+        }
+
+        [data-theme="dark"] {
+            /* Dark theme */
+            --bg-primary: #1f2937;
+            --bg-secondary: #111827;
+            --border-color: #374151;
+            --text-primary: #f9fafb;
+            --text-secondary: #d1d5db;
+            --accent-color: #6366f1;
+            --accent-hover: #4f46e5;
+            --input-bg: #1f2937;
+            --box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+            --error-color: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: var(--bg-primary);
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0;
+            position: relative;
+            transition: background-color 0.3s ease;
+            overflow-x: hidden;
+        }
+
+        .left-section {
+            width: 50%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 2rem;
+        }
+
+        .right-section {
+            width: 50%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: var(--bg-secondary);
+        }
+
+        .auth-container {
+            max-width: 400px;
+            width: 100%;
+            padding: clamp(1.5rem, 5vw, 2.5rem);
+            background: var(--bg-secondary);
+            border-radius: clamp(12px, 2vw, 20px);
+            box-shadow: var(--box-shadow);
+            border: 1px solid var(--border-color);
+            position: relative;
+            z-index: 2;
+            margin: 0 auto;
+            transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        /* Optional: Add a decorative background element */
+        .left-section::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(99, 102, 241, 0.05) 100%);
+            z-index: 1;
+            transition: background 0.3s ease;
+        }
+
+        .left-heading {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            padding: 0 2rem;
+        }
+
+        .left-heading h1 {
+            color: var(--accent-color);
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 700;
+            line-height: 1.3;
+            margin: 0 auto;
+            max-width: 600px;
+        }
+
+        .auth-container h2 {
+            color: var(--text-primary);
+            text-align: center;
+            margin-bottom: clamp(1.5rem, 4vw, 2rem);
+            font-size: clamp(1.8rem, 4vw, 2.2rem);
+            line-height: 1.2;
+            font-weight: 600;
+        }
+
+        .error-message {
+            color: var(--error-color);
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            background-color: rgba(220, 38, 38, 0.1);
+            display: none;
+            text-align: center;
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: clamp(1rem, 2vw, 1.2rem);
+            width: 100%;
+        }
+
+        .auth-form input {
+            width: 100%;
+            padding: clamp(0.8rem, 2vw, 1rem);
+            border: 2px solid var(--border-color);
+            border-radius: clamp(8px, 1.5vw, 10px);
+            background: var(--input-bg);
+            color: var(--text-primary);
+            font-size: clamp(0.9rem, 2vw, 1rem);
+            transition: all 0.3s ease;
+        }
+
+        .auth-form input:focus {
+            border-color: var(--accent-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .auth-form button {
+            width: 100%;
+            padding: clamp(0.8rem, 2vw, 1rem);
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: clamp(8px, 1.5vw, 10px);
+            cursor: pointer;
+            font-size: clamp(1rem, 2vw, 1.1rem);
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-top: 0.5rem;
+        }
+
+        .auth-form button:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+        }
+
+        .auth-form button:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
+
+        .auth-links {
+            margin-top: clamp(1.2rem, 3vw, 1.5rem);
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: clamp(0.9rem, 1.8vw, 1rem);
+        }
+
+        .auth-links a {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .auth-links a:hover {
+            text-decoration: underline;
+            color: var(--accent-hover);
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 1.5rem;
+            right: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-secondary);
+            padding: 0.5rem;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: var(--box-shadow);
+            z-index: 100;
+            transition: background-color 0.3s ease;
+        }
+
+        .theme-toggle .material-icons {
+            font-size: 1.5rem;
+            color: var(--accent-color);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            .left-section,
+            .right-section {
+                width: 100%;
+                height: auto;
+                min-height: 50vh;
+            }
+
+            .left-section {
+                padding: 1rem;
+            }
+
+            .auth-container {
+                margin: 2rem auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="theme-toggle" id="theme-toggle">
+        <span class="material-icons">dark_mode</span>
+    </div>
+    <div class="left-section">
+        <div class="left-heading">
+            <h1>Welcome to DeepNeural</h1>
+        </div>
+    </div>
+    <div class="right-section">
+        <div class="auth-container">
+            <h2>Create Account</h2>
+            <div class="error-message" id="error-message"></div>
+            <form class="auth-form" id="signup-form">
+                <input type="text" id="username" placeholder="Username" required>
+                <input type="email" id="email" placeholder="Email" required>
+                <input type="password" id="password" placeholder="Password" required>
+                <input type="password" id="confirm-password" placeholder="Confirm Password" required>
+                <button type="submit">Sign Up</button>
+            </form>
+            <div class="auth-links">
+                <p>Already have an account? <a href="login.html">Login</a></p>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Theme Toggle
+        const htmlElement = document.documentElement;
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = themeToggle.querySelector('.material-icons');
+
+        // Check for saved theme preference
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            htmlElement.setAttribute('data-theme', savedTheme);
+            updateThemeToggle(savedTheme);
+        } else {
+            // Check user's system preference
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                htmlElement.setAttribute('data-theme', 'dark');
+                updateThemeToggle('dark');
+            }
+        }
+
+        // Theme toggle functionality
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = htmlElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+            htmlElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeToggle(newTheme);
+        });
+
+        function updateThemeToggle(theme) {
+            if (theme === 'dark') {
+                themeIcon.textContent = 'light_mode';
+            } else {
+                themeIcon.textContent = 'dark_mode';
+            }
+        }
+
+        document.getElementById('signup-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            const errorMessage = document.getElementById('error-message');
+            const submitButton = e.target.querySelector('button[type="submit"]');
+
+            // Clear previous error messages
+            errorMessage.style.display = 'none';
+
+            // Validate passwords match
+            if (password !== confirmPassword) {
+                errorMessage.textContent = 'Passwords do not match';
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            // Validate password strength
+            if (password.length < 6) {
+                errorMessage.textContent = 'Password must be at least 6 characters long';
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            // Disable button and show loading state
+            submitButton.disabled = true;
+            submitButton.textContent = 'Creating Account...';
+
+            // Create loading overlay
+            const overlay = document.createElement('div');
+            overlay.style.position = 'fixed';
+            overlay.style.top = '0';
+            overlay.style.left = '0';
+            overlay.style.width = '100%';
+            overlay.style.height = '100%';
+            overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.2)';
+            overlay.style.display = 'flex';
+            overlay.style.justifyContent = 'center';
+            overlay.style.alignItems = 'center';
+            overlay.style.zIndex = '1000';
+            document.body.appendChild(overlay);
+
+            try {
+                console.log('Sending signup request for:', email);
+                const response = await fetch('/api/auth/signup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include', // Important for cookies
+                    body: JSON.stringify({ username, email, password })
+                });
+
+                const data = await response.json();
+                console.log('Signup response status:', response.status);
+
+                if (response.ok) {
+                    // Signup successful, show success message then redirect
+                    const successMessage = document.createElement('div');
+                    successMessage.style.position = 'fixed';
+                    successMessage.style.top = '50%';
+                    successMessage.style.left = '50%';
+                    successMessage.style.transform = 'translate(-50%, -50%)';
+                    successMessage.style.padding = '20px';
+                    successMessage.style.backgroundColor = 'white';
+                    successMessage.style.borderRadius = '8px';
+                    successMessage.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+                    successMessage.style.zIndex = '2000';
+                    successMessage.innerHTML = `
+                        <h3 style="color: #10b981; margin-bottom: 10px;">Account Created Successfully!</h3>
+                        <p>Redirecting to login page...</p>
+                    `;
+                    document.body.appendChild(successMessage);
+
+                    // Redirect after 2 seconds
+                    setTimeout(() => {
+                        window.location.href = '/login.html';
+                    }, 2000);
+                } else {
+                    // Show error message
+                    errorMessage.textContent = data.message || 'Signup failed. Please try again.';
+                    errorMessage.style.display = 'block';
+                    // Remove overlay
+                    document.body.removeChild(overlay);
+                }
+            } catch (error) {
+                console.error('Signup error:', error);
+                errorMessage.textContent = 'An error occurred. Please try again.';
+                errorMessage.style.display = 'block';
+                // Remove overlay
+                document.body.removeChild(overlay);
+            } finally {
+                if (!errorMessage.style.display || errorMessage.style.display === 'none') {
+                    // Don't restore the button if success (we're redirecting)
+                } else {
+                    // Re-enable button and restore text
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Sign Up';
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>
