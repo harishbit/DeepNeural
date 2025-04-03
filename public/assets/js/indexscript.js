@@ -1,4 +1,3 @@
-
 // Theme Toggle
 const htmlElement = document.documentElement;
 const themeToggle = document.getElementById('theme-toggle');
@@ -523,27 +522,35 @@ function sendMessage() {
 }
 
 function addMessage(message, isUser = false) {
+    const messageContainer = document.getElementById('messageContainer');
     const messageDiv = document.createElement('div');
     messageDiv.className = `message ${isUser ? 'user-message' : 'ai-message'}`;
-
-    // Create sender label
-    const senderDiv = document.createElement('div');
-    senderDiv.className = 'sender';
-    senderDiv.textContent = isUser ? 'You' : 'DeepNeural';
-    messageDiv.appendChild(senderDiv);
-
-    // Create message content
-    const contentDiv = document.createElement('div');
-    contentDiv.textContent = message;
-    messageDiv.appendChild(contentDiv);
-
-    // Add to container
+    
+    const messageContent = document.createElement('div');
+    messageContent.className = 'message-content';
+    
+    if (isUser) {
+        messageContent.textContent = message;
+        messageDiv.appendChild(messageContent);
+    } else {
+        // For AI messages, implement word-by-word display
+        const words = message.split(' ');
+        let currentIndex = 0;
+        
+        function displayNextWord() {
+            if (currentIndex < words.length) {
+                messageContent.textContent += (currentIndex === 0 ? '' : ' ') + words[currentIndex];
+                currentIndex++;
+                setTimeout(displayNextWord, 75);
+            }
+        }
+        
+        displayNextWord();
+    }
+    
+    messageDiv.appendChild(messageContent);
     messageContainer.appendChild(messageDiv);
-
-    // Ensure scroll to bottom happens after DOM update
-    setTimeout(() => {
-        messageContainer.scrollTop = messageContainer.scrollHeight;
-    }, 0);
+    messageContainer.scrollTop = messageContainer.scrollHeight;
 }
 
 // Save chat to history
