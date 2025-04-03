@@ -25,7 +25,7 @@ def generate_response(prompt):
         response = modelbit.get_inference(
             region="us-east-2.aws",
             workspace="adarshmishra",
-            deployment="run_inference_v2",
+            deployment="run_inference",
             data=prompt
         )
         print("Modelbit inference completed", file=sys.stderr)
