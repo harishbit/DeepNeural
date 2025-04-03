@@ -1,7 +1,7 @@
 {
-  "name": "deepneural-chat",
+  "name": "DeepNeural",
   "version": "1.0.0",
-  "description": "AI Chat Interface with Email Verification",
+  "description": "AI Chat Interface",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
