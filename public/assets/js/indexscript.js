@@ -526,8 +526,6 @@ function addMessage(message, isUser = false) {
     const messageDiv = document.createElement('div');
     messageDiv.className = `message ${isUser ? 'user-message' : 'ai-message'}`;
     
-<<<<<<< HEAD
-=======
     // Create sender label
     const senderDiv = document.createElement('div');
     senderDiv.className = 'sender';
@@ -535,7 +533,6 @@ function addMessage(message, isUser = false) {
     messageDiv.appendChild(senderDiv);
     
     // Create message content
->>>>>>> 5c0526f (added word delay)
     const messageContent = document.createElement('div');
     messageContent.className = 'message-content';
     
@@ -551,11 +548,7 @@ function addMessage(message, isUser = false) {
             if (currentIndex < words.length) {
                 messageContent.textContent += (currentIndex === 0 ? '' : ' ') + words[currentIndex];
                 currentIndex++;
-<<<<<<< HEAD
-                setTimeout(displayNextWord, 75);
-=======
                 setTimeout(displayNextWord, 60);
->>>>>>> 5c0526f (added word delay)
             }
         }
         
